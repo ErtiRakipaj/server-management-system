@@ -1,1 +1,1 @@
-# training-management-system
+# server-management-system
