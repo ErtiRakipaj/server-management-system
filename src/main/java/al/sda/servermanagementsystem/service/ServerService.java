@@ -76,7 +76,7 @@ public class ServerService {
 
 
     public Server pingServer(String ip) throws IOException, GeoIp2Exception {
-        Server server = serverRepository.findServerByIp(ip);
+        Server server = serverRepository.findServerByIpAndOwner(ip,extractUsernameFromTheCurrentLoggedUser());
 
         InetAddress address = InetAddress.getByName(ip);
 

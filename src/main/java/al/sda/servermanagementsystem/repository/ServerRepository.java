@@ -9,6 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ServerRepository extends JpaRepository <Server, Long> {
-    Server findServerByIp(String ip);
+    Server findServerByIpAndOwner(String ip,String owner);
     List<Server> findAllByOwner(String owner, PageRequest limit);
 }

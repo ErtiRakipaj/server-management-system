@@ -30,7 +30,7 @@ public class Server {
     private String companyName;
     @Enumerated(EnumType.STRING)
     private Status status;
-    @JsonIgnore
+
     private String owner;
 
 }

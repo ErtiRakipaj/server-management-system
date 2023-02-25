@@ -34,7 +34,12 @@ public class SecurityConfiguration {
                 .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 .and()
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout()
+                .logoutUrl("/auth/logout") // specify the logout URL
+                .logoutSuccessUrl("/") // specify the URL to redirect to after logout
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID", "jwtToken");
 
         return http.build();
     }
