@@ -20,6 +20,8 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
+    private boolean isLoggedIn = false;
+
     public AuthenticationResponse register(RegisterRequest registerRequest) {
         var user = User.builder()
                 .firstName(registerRequest.getFirstName())
@@ -45,13 +47,16 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
         var user = userRepository.findUserByUsername(authenticationRequest.getUsername())
                 .orElseThrow(()-> new RuntimeException("User not found"));
-
+        if (isLoggedIn){
+            throw new RuntimeException("User already logged");
+        }
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authenticationRequest.getUsername(),
                         authenticationRequest.getPassword()
                 )
         );
+        isLoggedIn = true;
 
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
