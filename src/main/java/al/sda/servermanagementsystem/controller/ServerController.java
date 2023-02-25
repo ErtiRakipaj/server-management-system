@@ -8,6 +8,7 @@ import al.sda.servermanagementsystem.service.ServerService;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,12 +25,13 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/servers")
 @RequiredArgsConstructor
 @CrossOrigin
+@Slf4j
 public class ServerController {
 
     private final ServerService serverService;
     @GetMapping("")
         public ResponseEntity<Response> getServers() {
-
+            log.info("asdfasdf");
             return ResponseEntity.ok(
                     Response.builder()
                             .timeStamp(LocalDateTime.now())
