@@ -44,9 +44,7 @@ public class ServerService {
 
     public Server findById(Long id) {
         log.info("Getting server with ID: {}",id);
-        return serverRepository.findById(id).orElseThrow(
-                ()-> new RuntimeException("Server with " + id + " not found")
-        );
+        return serverRepository.findById(id).get();
     }
     public Server createNewServer(CreateServerRequest request) {
         log.info("Creating new server");
@@ -78,12 +76,9 @@ public class ServerService {
 
 
     public Server pingServer(String ip) throws IOException, GeoIp2Exception {
-        Server server = serverRepository.findServerByIp(ip).orElseThrow(
-                ()->new RuntimeException("Ip not found")
-        );
+        Server server = serverRepository.findServerByIp(ip);
 
         InetAddress address = InetAddress.getByName(ip);
-
 
         server.setLocation(locationExtractor(address));
 
@@ -100,15 +95,15 @@ public class ServerService {
 
     private String setServerImageUrl(){
         String[] imageURLs = {
-                "https://cdn-icons-png.flaticon.com/512/2972/2972479.png",
-                "https://cdn-icons-png.flaticon.com/512/969/969438.png",
-                "https://as2.ftcdn.net/v2/jpg/02/19/10/53/1000_F_219105377_jE3g3IWsrNFn5KfNjdXvidrXpYvmVvS4.jpg",
-                "https://www.iconpacks.net/icons/2/free-database-server-icon-2375-thumb.png"
+                "server1.png",
+                "server2.png",
+                "server3.png",
+                "server4.png"
         };
 
         return ServletUriComponentsBuilder
                 .fromCurrentContextPath()
-                .path("/server/image"+imageURLs[new Random().nextInt(4)]).toUriString();
+                .path("/server/image/"+imageURLs[new Random().nextInt(4)]).toUriString();
     }
 
 
