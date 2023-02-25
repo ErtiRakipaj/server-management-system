@@ -1,6 +1,7 @@
 package al.sda.servermanagementsystem.model;
 
 import al.sda.servermanagementsystem.enums.Status;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +30,7 @@ public class Server {
     private String companyName;
     @Enumerated(EnumType.STRING)
     private Status status;
+    @JsonIgnore
     private String owner;
 
 }

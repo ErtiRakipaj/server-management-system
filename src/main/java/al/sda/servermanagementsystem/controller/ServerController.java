@@ -31,7 +31,7 @@ public class ServerController {
     private final ServerService serverService;
     @GetMapping("")
         public ResponseEntity<Response> getServers() {
-            log.info("asdfasdf");
+
             return ResponseEntity.ok(
                     Response.builder()
                             .timeStamp(LocalDateTime.now())
