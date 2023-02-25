@@ -8,6 +8,8 @@ import al.sda.servermanagementsystem.requests.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +22,7 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
-    private boolean isLoggedIn = false;
+
 
     public AuthenticationResponse register(RegisterRequest registerRequest) {
         var user = User.builder()
@@ -47,16 +49,30 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
         var user = userRepository.findUserByUsername(authenticationRequest.getUsername())
                 .orElseThrow(()-> new RuntimeException("User not found"));
-        if (isLoggedIn){
-            throw new RuntimeException("User already logged");
+
+        //check if it's already authed
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserDetails) {
+            throw new RuntimeException("already authed");
         }
-        authenticationManager.authenticate(
+
+
+
+
+//        authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(
+//                        authenticationRequest.getUsername(),
+//                        authenticationRequest.getPassword()
+//                )
+//        );
+
+        SecurityContextHolder.getContext().setAuthentication( authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authenticationRequest.getUsername(),
                         authenticationRequest.getPassword()
                 )
-        );
-        isLoggedIn = true;
+        ));
+
 
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
