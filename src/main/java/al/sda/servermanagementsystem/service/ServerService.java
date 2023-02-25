@@ -94,16 +94,11 @@ public class ServerService {
 
 
     private String setServerImageUrl(){
-        String[] imageURLs = {
-                "server1.png",
-                "server2.png",
-                "server3.png",
-                "server4.png"
-        };
+        String[] imageURLs = {"server1.png","server2.png","server3.png","server4.png"};
 
         return ServletUriComponentsBuilder
                 .fromCurrentContextPath()
-                .path("/server/image/"+imageURLs[new Random().nextInt(4)]).toUriString();
+                .path("/servers/image/"+imageURLs[new Random().nextInt(4)]).toUriString();
     }
 
 
