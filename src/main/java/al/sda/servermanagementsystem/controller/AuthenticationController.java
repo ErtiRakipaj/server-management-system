@@ -28,24 +28,24 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest registerRequest) {
-            return ResponseEntity.ok(authenticationService.register(registerRequest));
+        return ResponseEntity.ok(authenticationService.register(registerRequest));
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
         return ResponseEntity.ok(authenticationService.authenticate(authenticationRequest));
     }
+
     @RequestMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            new SecurityContextLogoutHandler().logout(request, response, authentication);
-            String jwtToken = request.getHeader("Authorization"); // obtain the JWT token from the request header
-            if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
-                jwtToken = jwtToken.substring(7); // remove the "Bearer " prefix from the token
-                authenticationService.logout(jwtToken);
+        HttpSession session = request.getSession(false); // get the user's session, if it exists
+        if (session != null) {
+            String jwtToken = (String) session.getAttribute("jwtToken"); // retrieve the JWT token from the session
+            if (jwtToken != null) {
+                //authenticationService.logout(jwtToken);
                 tokenBlacklistService.blacklistToken(jwtToken); // blacklist the JWT token
             }
+            session.invalidate(); // invalidate the user's session
             return ResponseEntity.ok("You have been logged out successfully.");
         } else {
             return ResponseEntity.badRequest().body("You are not currently logged in.");

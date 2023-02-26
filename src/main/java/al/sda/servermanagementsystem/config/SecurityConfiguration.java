@@ -50,7 +50,7 @@ public class SecurityConfiguration {
                     String jwtToken = request.getHeader("Authorization");
                     if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
                         jwtToken = jwtToken.substring(7);
-                        jwtService.isTokenExpired(jwtToken);
+                        tokenBlacklistService.blacklistToken(jwtToken);
                     }
                     response.setStatus(HttpServletResponse.SC_OK);
                 })
