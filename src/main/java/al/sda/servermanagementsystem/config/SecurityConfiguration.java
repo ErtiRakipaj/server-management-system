@@ -1,5 +1,8 @@
 package al.sda.servermanagementsystem.config;
 
+import al.sda.servermanagementsystem.service.JwtService;
+import al.sda.servermanagementsystem.service.TokenBlacklistService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +23,10 @@ public class SecurityConfiguration {
 
     private final AuthenticationProvider authenticationProvider;
 
+    private final JwtService jwtService;
+
+    private final TokenBlacklistService tokenBlacklistService;
+
     @Bean
     public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception {
 
@@ -38,11 +45,17 @@ public class SecurityConfiguration {
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout()
-                .logoutUrl("/auth/logout") // specify the logout URL
                 .permitAll()
-                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK)) // specify the URL to redirect to after logout
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    String jwtToken = request.getHeader("Authorization");
+                    if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
+                        jwtToken = jwtToken.substring(7);
+                        jwtService.isTokenExpired(jwtToken);
+                    }
+                    response.setStatus(HttpServletResponse.SC_OK);
+                })
                 .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID", "jwtToken");
+                .deleteCookies("JSESSIONID");
 
         return http.build();
     }

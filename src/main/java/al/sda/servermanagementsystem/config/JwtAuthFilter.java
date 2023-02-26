@@ -66,8 +66,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
 
                     // Save the JWT token to the session
-                    HttpSession session = request.getSession();
-                    session.setAttribute("jwtToken", jwt);
+//                    HttpSession session = request.getSession();
+//                    session.setAttribute("jwtToken", jwt);
+
+                    request.getSession().setAttribute("jwtToken",jwt);
                 }
             }
 

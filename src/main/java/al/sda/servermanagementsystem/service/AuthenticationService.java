@@ -59,6 +59,7 @@ public class AuthenticationService {
 
 
 
+
 //        authenticationManager.authenticate(
 //                new UsernamePasswordAuthenticationToken(
 //                        authenticationRequest.getUsername(),
@@ -79,5 +80,12 @@ public class AuthenticationService {
                 .confirmation("Logged in")
                 .token(jwtToken)
                 .build();
+    }
+    public void logout(String jwtToken) {
+        // Invalidate the token by setting its expiration date to now
+        jwtService.invalidateToken(jwtToken);
+
+        // Clear the SecurityContext
+        SecurityContextHolder.clearContext();
     }
 }

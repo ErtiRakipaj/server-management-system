@@ -35,7 +35,7 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
         return ResponseEntity.ok(authenticationService.authenticate(authenticationRequest));
     }
-    @PostMapping("/logout")
+    @RequestMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
@@ -43,6 +43,7 @@ public class AuthenticationController {
             String jwtToken = request.getHeader("Authorization"); // obtain the JWT token from the request header
             if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
                 jwtToken = jwtToken.substring(7); // remove the "Bearer " prefix from the token
+                authenticationService.logout(jwtToken);
                 tokenBlacklistService.blacklistToken(jwtToken); // blacklist the JWT token
             }
             return ResponseEntity.ok("You have been logged out successfully.");
