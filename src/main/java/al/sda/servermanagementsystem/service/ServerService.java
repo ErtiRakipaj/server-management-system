@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 @Service
@@ -57,10 +58,17 @@ public class ServerService {
         return serverRepository.save(server);
     }
 
-    public Boolean deleteServerById(Long id) {
+    public Boolean deleteServer(Long id) {
         log.info("Deleting server with id: {}",id);
-        serverRepository.deleteById(id);
-        return TRUE;
+        Server server = serverRepository.findById(id).orElseThrow(
+                ()-> new RuntimeException("server not found")
+        );
+        if (server.getOwner().equals(extractUsernameFromTheCurrentLoggedUser())) {
+            serverRepository.deleteServerById(id);
+            return TRUE;
+        }
+
+        return FALSE;
     }
 
     public Server updateServer(CreateServerRequest request){

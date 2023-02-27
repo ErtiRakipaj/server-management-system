@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface ServerRepository extends JpaRepository <Server, Long> {
     Server findServerByIpAndOwner(String ip,String owner);
     List<Server> findAllByOwner(String owner, PageRequest limit);
+
+    void deleteServerById(Long id);
 }
