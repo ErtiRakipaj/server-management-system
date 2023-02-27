@@ -18,8 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 import static java.time.LocalDateTime.now;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/servers")
@@ -67,6 +66,22 @@ public class ServerController {
                         .message(server.getStatus() == Status.ACTIVE ? "Ping Success" : "Ping Failed")
                         .status(OK)
                         .statusCode(OK.value())
+                        .build()
+        );
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Response> deleteServer(@PathVariable("id") Long id) {
+        Boolean isServerDeleted = serverService.deleteServer(id);
+        HttpStatus status = isServerDeleted.booleanValue() == Boolean.TRUE ? OK : BAD_REQUEST;
+        String message = isServerDeleted.booleanValue() == Boolean.TRUE ? "Deleted Successfully" : "Deletion failed";
+        return ResponseEntity.ok(
+                Response.builder()
+                        .timeStamp(now())
+                        .data(Map.of("deleted",isServerDeleted))
+                        .message(message)
+                        .status(status)
+                        .statusCode(status.value())
                         .build()
         );
     }
