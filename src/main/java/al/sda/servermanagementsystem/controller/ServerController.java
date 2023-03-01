@@ -5,6 +5,7 @@ import al.sda.servermanagementsystem.model.Response;
 import al.sda.servermanagementsystem.model.Server;
 import al.sda.servermanagementsystem.requests.CreateServerRequest;
 import al.sda.servermanagementsystem.service.ServerService;
+import com.maxmind.geoip2.exception.AddressNotFoundException;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static java.time.LocalDateTime.now;
 import static org.springframework.http.HttpStatus.*;
@@ -29,8 +31,8 @@ public class ServerController {
 
     private final ServerService serverService;
     @GetMapping("")
-        public ResponseEntity<Response> getServers() {
-
+        public ResponseEntity<Response> getServers() throws InterruptedException {
+        TimeUnit.SECONDS.sleep(3);
             return ResponseEntity.ok(
                     Response.builder()
                             .timeStamp(LocalDateTime.now())
@@ -58,16 +60,36 @@ public class ServerController {
 
     @GetMapping("/ping/{ipAddress}")
     public ResponseEntity<Response> pingServer(@PathVariable("ipAddress") String ipAddress) throws IOException, GeoIp2Exception {
-        Server server = serverService.pingServer(ipAddress);
-        return ResponseEntity.ok(
-                Response.builder()
-                        .timeStamp(now())
-                        .data(Map.of("server", server))
-                        .message(server.getStatus() == Status.ACTIVE ? "Ping Success" : "Ping Failed")
-                        .status(OK)
-                        .statusCode(OK.value())
-                        .build()
-        );
+
+        try {
+            Server server = serverService.pingServer(ipAddress);
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .timeStamp(now())
+                            .data(Map.of("server", server))
+                            .message(server.getStatus() == Status.ACTIVE ? "Ping Success" : "Ping Failed")
+                            .status(OK)
+                            .statusCode(OK.value())
+                            .build()
+            );
+        } catch (AddressNotFoundException anfe) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Response.builder()
+                            .timeStamp(now())
+                            .message("Address not found")
+                            .status(HttpStatus.NOT_FOUND)
+                            .statusCode(HttpStatus.NOT_FOUND.value())
+                            .build());
+        } catch (IOException | GeoIp2Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Response.builder()
+                            .timeStamp(now())
+                            .message("Internal server error")
+                            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                            .build());
+        }
+
     }
 
     @DeleteMapping("/delete/{id}")

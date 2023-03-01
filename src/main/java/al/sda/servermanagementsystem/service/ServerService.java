@@ -5,6 +5,7 @@ import al.sda.servermanagementsystem.model.Server;
 import al.sda.servermanagementsystem.repository.ServerRepository;
 import al.sda.servermanagementsystem.requests.CreateServerRequest;
 import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.exception.AddressNotFoundException;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.AsnResponse;
 import com.maxmind.geoip2.model.CityResponse;
@@ -54,6 +55,7 @@ public class ServerService {
                 .ip(request.getIp())
                 .imageUrl(setServerImageUrl())
                 .owner(extractUsernameFromTheCurrentLoggedUser())
+                .status(Status.INACTIVE)
                 .build();
         return serverRepository.save(server);
     }
@@ -102,11 +104,17 @@ public class ServerService {
 
 
     private String setServerImageUrl(){
-        String[] imageURLs = {"server1.png","server2.png","server3.png","server4.png"};
+        String[] imageURLs = {
+                "https://cdn-icons-png.flaticon.com/512/2972/2972479.png",
+                "https://cdn-icons-png.flaticon.com/512/969/969438.png",
+                "https://cdn-icons-png.flaticon.com/512/4116/4116938.png",
+                "https://cdn-icons-png.flaticon.com/512/1202/1202760.png"};
 
-        return ServletUriComponentsBuilder
-                .fromCurrentContextPath()
-                .path("/servers/image/"+imageURLs[new Random().nextInt(4)]).toUriString();
+//        return ServletUriComponentsBuilder
+//                .fromCurrentContextPath()
+//                .path("/servers/image/"+imageURLs[new Random().nextInt(4)]).toUriString();
+
+        return imageURLs[new Random().nextInt(4)];
     }
 
 
@@ -142,21 +150,29 @@ public class ServerService {
     }
 
     private String locationExtractor(InetAddress ip) throws IOException, GeoIp2Exception {
-        DatabaseReader locationDb = locationDatabase();
-        CityResponse cityResponse = locationDb.city(ip);
+        try {
+            DatabaseReader locationDb = locationDatabase();
+            CityResponse cityResponse = locationDb.city(ip);
 
-        String city = cityResponse.getCity().getName();
-        String country = cityResponse.getCountry().getName();
+            String city = cityResponse.getCity().getName();
+            String country = cityResponse.getCountry().getName();
 
-        return country+", "+city;
+            return country+", "+city;
+        } catch (AddressNotFoundException anfe) {
+            throw new AddressNotFoundException(anfe.getMessage());
+        }
     }
 
     private String enterpriseExtractor(InetAddress ip) throws IOException, GeoIp2Exception {
 
-        DatabaseReader locationASNDb = locationASNDatabase();
-        AsnResponse response = locationASNDb.asn(ip);
+        try {
+            DatabaseReader locationASNDb = locationASNDatabase();
+            AsnResponse response = locationASNDb.asn(ip);
 
-        return response.getAutonomousSystemOrganization();
+            return response.getAutonomousSystemOrganization();
+        } catch (AddressNotFoundException anfe) {
+            throw new AddressNotFoundException(anfe.getMessage());
+        }
 
     }
 }
