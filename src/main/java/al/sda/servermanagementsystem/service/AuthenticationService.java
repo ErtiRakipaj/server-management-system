@@ -34,7 +34,10 @@ public class AuthenticationService {
                 .build();
 
         if (userRepository.findUserByUsername(user.getUsername()).isPresent()) {
-            throw new RuntimeException("User already exists");
+            return AuthenticationResponse.builder()
+                    .confirmation("Username already exists")
+                    .token("")
+                    .build();
         }
 
         userRepository.save(user);
