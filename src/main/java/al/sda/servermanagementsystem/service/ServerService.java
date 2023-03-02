@@ -110,9 +110,6 @@ public class ServerService {
                 "https://cdn-icons-png.flaticon.com/512/4116/4116938.png",
                 "https://cdn-icons-png.flaticon.com/512/1202/1202760.png"};
 
-//        return ServletUriComponentsBuilder
-//                .fromCurrentContextPath()
-//                .path("/servers/image/"+imageURLs[new Random().nextInt(4)]).toUriString();
 
         return imageURLs[new Random().nextInt(4)];
     }
