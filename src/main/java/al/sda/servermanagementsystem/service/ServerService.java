@@ -134,13 +134,13 @@ public class ServerService {
     }
 
     private DatabaseReader locationDatabase() throws IOException {
-        File database = new File("C:\\Users\\user\\Documents\\SDAFinalProject\\GeoLite2-City_20230224\\GeoLite2-City.mmdb");
+        File database = new File("src/main/resources/GeoLite2-City.mmdb");
         DatabaseReader reader = new DatabaseReader.Builder(database).build();
 
         return reader;
     }
     private DatabaseReader locationASNDatabase() throws IOException {
-        File database = new File("C:\\Users\\user\\Documents\\SDAFinalProject\\GeoLite2-ASN_20230224\\GeoLite2-ASN.mmdb");
+        File database = new File("src/main/resources/GeoLite2-ASN.mmdb");
         DatabaseReader reader = new DatabaseReader.Builder(database).build();
 
         return reader;
