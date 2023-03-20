@@ -3,3 +3,5 @@ This is a management system created using Java, Spring Boot, JPA Repostiory, Spr
 
 For the security feature this API offers register, login, logout features. Once the user logs in (after registered of course) a JWT will be generated which once put as an Authorization header offers access to the other secure endpoints. The logout feature invalidates the session and puts the token into an in-memory blacklist which cannot be used anymore to access the endpoints. The user has to log in again and the new token has to be put as a header to once again be able to access the endpoints. 
 
+The frontend for this API:
+https://github.com/ErtiRakipaj/server-app-frontend
